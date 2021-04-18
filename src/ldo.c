@@ -153,6 +153,7 @@ int luaD_rawrunprotected (lua_State *L, Pfunc f, void *ud) {
 /*
 ** {==================================================================
 ** Stack reallocation
+** 拷贝到新的数据结构上
 ** ===================================================================
 */
 static void correctstack (lua_State *L, TValue *oldstack) {
@@ -173,7 +174,7 @@ static void correctstack (lua_State *L, TValue *oldstack) {
 /* some space for error handling */
 #define ERRORSTACKSIZE	(LUAI_MAXSTACK + 200)
 
-
+//申请新的stack内容 并且进行拷贝
 void luaD_reallocstack (lua_State *L, int newsize) {
   TValue *oldstack = L->stack;
   int lim = L->stacksize;
