@@ -93,7 +93,8 @@ static void growstack (lua_State *L, void *ud) {
   luaD_growstack(L, size);
 }
 
-
+//检查luaState的栈的大小 如果栈小了会扩容 默认尺寸是35 
+//说明 只会扩容 不会缩小
 LUA_API int lua_checkstack (lua_State *L, int n) {
   int res;
   CallInfo *ci = L->ci;
