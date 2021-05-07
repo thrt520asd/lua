@@ -64,7 +64,7 @@ unsigned int luaS_hashlongstr (TString *ts) {
   return ts->hash;
 }
 
-
+//string缓存池扩容
 /*
 ** resizes the string table
 */
@@ -95,7 +95,7 @@ void luaS_resize (lua_State *L, int newsize) {
   tb->size = newsize;
 }
 
-
+//清除lua string对象缓存
 /*
 ** Clear API string cache. (Entries cannot be empty, so fill them with
 ** a non-collectable string.)
@@ -109,7 +109,7 @@ void luaS_clearcache (global_State *g) {
     }
 }
 
-
+//初始化stringTable，和string缓存
 /*
 ** Initialize the string table and the string cache
 */
@@ -126,7 +126,7 @@ void luaS_init (lua_State *L) {
 }
 
 
-
+//创建一个字符串对象
 /*
 ** creates a new string object
 */
@@ -143,14 +143,14 @@ static TString *createstrobj (lua_State *L, size_t l, int tag, unsigned int h) {
   return ts;
 }
 
-
+//创建长字符串对象
 TString *luaS_createlngstrobj (lua_State *L, size_t l) {
   TString *ts = createstrobj(L, l, LUA_TLNGSTR, G(L)->seed);
   ts->u.lnglen = l;
   return ts;
 }
 
-
+//移除缓存对tString对象
 void luaS_remove (lua_State *L, TString *ts) {
   stringtable *tb = &G(L)->strt;
   TString **p = &tb->hash[lmod(ts->hash, tb->size)];
@@ -160,7 +160,7 @@ void luaS_remove (lua_State *L, TString *ts) {
   tb->nuse--;
 }
 
-
+//检测短字符串是否存在，如果存在激活后返回，如果不存在重新创建
 /*
 ** checks whether short string exists and reuses it or creates a new one
 */
@@ -174,6 +174,7 @@ static TString *internshrstr (lua_State *L, const char *str, size_t l) {
     if (l == ts->shrlen &&
         (memcmp(str, getstr(ts), l * sizeof(char)) == 0)) {
       /* found! */
+      //gc处理
       if (isdead(g, ts))  /* dead (but not collected yet)? */
         changewhite(ts);  /* resurrect it */
       return ts;
@@ -192,7 +193,7 @@ static TString *internshrstr (lua_State *L, const char *str, size_t l) {
   return ts;
 }
 
-
+//创建tString，判断字符串长度，如果小于40就塞入字符串全局表缓存，否则创建tString，不放入全局表
 /*
 ** new string (with explicit length)
 */
@@ -209,7 +210,7 @@ TString *luaS_newlstr (lua_State *L, const char *str, size_t l) {
   }
 }
 
-
+//创建新的string ，先从缓存里找如果找不到就创建新的
 /*
 ** Create or reuse a zero-terminated string, first checking in the
 ** cache (using the string address as a key). The cache can contain

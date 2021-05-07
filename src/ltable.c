@@ -8,8 +8,8 @@
 #define LUA_CORE
 
 #include "lprefix.h"
-
-
+#include "lauxlib.h"
+#include "string.h"
 /*
 ** Implementation of tables (aka arrays, objects, or hash tables).
 ** Tables keep its elements in two parts: an array part and a hash part.
@@ -552,7 +552,7 @@ const TValue *luaH_getshortstr (Table *t, TString *key) {
   }
 }
 
-
+//通用获取val
 /*
 ** "Generic" get version. (Not that generic: not valid for integers,
 ** which may be in array part, nor for floats with integral values.)
@@ -598,6 +598,8 @@ const TValue *luaH_get (Table *t, const TValue *key) {
       /* else... */
     }  /* FALLTHROUGH */
     default:
+    // lua_writestring("getgeneric",1);
+    // lua_writeline();
       return getgeneric(t, key);
   }
 }
